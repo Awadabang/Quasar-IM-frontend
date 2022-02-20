@@ -9,4 +9,5 @@ export interface Meta {
 
 export interface User_State {
   username: string;
+  token: string;
 }

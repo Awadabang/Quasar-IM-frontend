@@ -158,7 +158,7 @@
 <script lang="ts">
 import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
 
 const conversations = [
@@ -201,6 +201,7 @@ export default {
 
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const userState = useMainStore();
     const $q = useQuasar();
     const leftDrawerOpen = ref(false);
@@ -213,9 +214,15 @@ export default {
       return conversations[currentConversationIndex.value];
     });
 
-    onMounted(() => {
-      //TODO: 加载页面前，判断是否已经登陆，若未登录，跳回登录页面
-      userState.initUsername({ username: String(route.params.username) });
+    onMounted(async () => {
+      //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
+      userState.initUsername({
+        username: String(route.params.username),
+        token: String(route.params.token),
+      });
+      if (userState.userstate.token == 'undefined') {
+        await router.replace('/');
+      }
     });
 
     const style = computed(() => ({

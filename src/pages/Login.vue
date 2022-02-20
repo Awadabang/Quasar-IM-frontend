@@ -33,10 +33,13 @@ export default defineComponent({
     //↓路径跳转
     const router = useRouter();
     async function onSubmit() {
-      //验证username与password，若满足则执行下面代码，跳转至/index，携带参数：username
+      //验证username与password，若满足则执行下面代码，跳转至/index，携带参数：username,token
       await router.push({
         name: 'index',
-        params: { username: username.value },
+        params: {
+          username: username.value,
+          token: '',
+        },
       });
     }
 
