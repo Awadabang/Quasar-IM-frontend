@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { createPinia } from 'pinia';
+import { User_State } from 'src/components/models';
 
 const createStore = createPinia;
 export default createStore;
@@ -14,8 +15,7 @@ export const useMainStore = defineStore('main', {
 
   state: () => {
     return {
-      count: 100,
-      foo: 1,
+      userstate: {} as User_State,
     };
   },
 
@@ -27,5 +27,9 @@ export const useMainStore = defineStore('main', {
   /**
    * 类似于组建的methods，封装业务逻辑，修改state
    */
-  actions: {},
+  actions: {
+    initUsername(userState: User_State) {
+      this.userstate = userState;
+    },
+  },
 });

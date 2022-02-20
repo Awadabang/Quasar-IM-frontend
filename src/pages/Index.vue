@@ -157,7 +157,9 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useMainStore } from '../store/index';
 
 const conversations = [
   {
@@ -198,6 +200,8 @@ export default {
   name: 'WhatsappLayout',
 
   setup() {
+    const route = useRoute();
+    const userState = useMainStore();
     const $q = useQuasar();
     const leftDrawerOpen = ref(false);
     const search = ref('');
@@ -207,6 +211,11 @@ export default {
     const currentConversationIndex = ref(0);
     const currentConversation = computed(() => {
       return conversations[currentConversationIndex.value];
+    });
+
+    onMounted(() => {
+      //TODO: 加载页面前，判断是否已经登陆，若未登录，跳回登录页面
+      userState.initUsername({ username: String(route.params.username) });
     });
 
     const style = computed(() => ({
