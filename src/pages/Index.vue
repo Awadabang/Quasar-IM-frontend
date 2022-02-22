@@ -5,7 +5,10 @@
         <q-toolbar class="bg-grey-3 text-black">
           <q-btn round flat>
             <q-avatar>
-              <img :src="currentConversation.avatar" />
+              <img
+                v-show="currentConversation.avatar"
+                :src="currentConversation.avatar"
+              />
             </q-avatar>
           </q-btn>
 
@@ -56,6 +59,10 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
           </q-avatar>
+
+          <span class="q-subtitle-1 q-pl-md">
+            {{ userState.getUsername }}
+          </span>
 
           <q-space />
 
@@ -160,41 +167,44 @@ import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
+import { api } from 'src/boot/axios';
+import { Conversations } from '../components/models';
 
-const conversations = [
-  {
-    id: 1,
-    person: 'Razvan Stoenescu',
-    avatar: 'https://cdn.quasar.dev/team/razvan_stoenescu.jpeg',
-    caption: "I'm working on Quasar!",
-    time: '15:00',
-    sent: true,
-  },
-  {
-    id: 2,
-    person: 'Dan Popescu',
-    avatar: 'https://cdn.quasar.dev/team/dan_popescu.jpg',
-    caption: "I'm working on Quasar!",
-    time: '16:00',
-    sent: true,
-  },
-  {
-    id: 3,
-    person: 'Jeff Galbraith',
-    avatar: 'https://cdn.quasar.dev/team/jeff_galbraith.jpg',
-    caption: "I'm working on Quasar!",
-    time: '18:00',
-    sent: true,
-  },
-  {
-    id: 4,
-    person: 'Allan Gaunt',
-    avatar: 'https://cdn.quasar.dev/team/allan_gaunt.png',
-    caption: "I'm working on Quasar!",
-    time: '17:00',
-    sent: true,
-  },
-];
+const conversations = [] as Conversations[];
+// const conversations = [
+// {
+//   id: 1,
+//   person: 'Razvan Stoenescu',
+//   avatar: 'https://cdn.quasar.dev/team/razvan_stoenescu.jpeg',
+//   caption: "I'm working on Quasar!",
+//   time: '15:00',
+//   sent: true,
+// },
+// {
+//   id: 2,
+//   person: 'Dan Popescu',
+//   avatar: 'https://cdn.quasar.dev/team/dan_popescu.jpg',
+//   caption: "I'm working on Quasar!",
+//   time: '16:00',
+//   sent: true,
+// },
+// {
+//   id: 3,
+//   person: 'Jeff Galbraith',
+//   avatar: 'https://cdn.quasar.dev/team/jeff_galbraith.jpg',
+//   caption: "I'm working on Quasar!",
+//   time: '18:00',
+//   sent: true,
+// },
+// {
+//   id: 4,
+//   person: 'Allan Gaunt',
+//   avatar: 'https://cdn.quasar.dev/team/allan_gaunt.png',
+//   caption: "I'm working on Quasar!",
+//   time: '17:00',
+//   sent: true,
+// },
+// ];
 
 export default {
   name: 'WhatsappLayout',
@@ -204,35 +214,49 @@ export default {
     const router = useRouter();
     const userState = useMainStore();
     const $q = useQuasar();
-    const leftDrawerOpen = ref(false);
     const search = ref('');
     const message = ref('');
     const search_indrawer = ref('');
     const Drawer_icon = ref('message');
-    const currentConversationIndex = ref(0);
+    const currentConversationIndex = computed(() => {
+      return conversations.length == 0 ? ref(-1) : ref(0);
+    });
     const currentConversation = computed(() => {
-      return conversations[currentConversationIndex.value];
+      if (currentConversationIndex.value.value == -1) {
+        return [] as Conversations[];
+      } else {
+        return conversations[currentConversationIndex.value.value];
+      }
     });
 
     onMounted(async () => {
       //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
+      //      若有token，利用token获取用户信息，根据code：200成功、404跳回登录页面、500服务器故障
       userState.initUsername({
         username: String(route.params.username),
         token: String(route.params.token),
       });
       if (userState.userstate.token == 'undefined') {
         await router.replace('/');
+      } else {
+        await api
+          .post('/verify', {
+            token: userState.userstate.token,
+          })
+          .then(function (res) {
+            console.log(res);
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
       }
     });
 
     const style = computed(() => ({
       height: String($q.screen.height) + 'px',
     }));
-    function toggleLeftDrawer() {
-      leftDrawerOpen.value = !leftDrawerOpen.value;
-    }
     function setCurrentConversation(index: number) {
-      currentConversationIndex.value = index;
+      currentConversationIndex.value.value = index;
     }
     function search_InDrawer() {
       if (Drawer_icon.value == 'message') {
@@ -251,7 +275,7 @@ export default {
     }
 
     return {
-      leftDrawerOpen,
+      userState,
       search,
       message,
       search_indrawer,
@@ -261,7 +285,6 @@ export default {
       currentConversation,
       setCurrentConversation,
       style,
-      toggleLeftDrawer,
       search_InDrawer,
       changeDrawer,
     };
