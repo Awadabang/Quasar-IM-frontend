@@ -22,8 +22,12 @@
 </template>
 
 <script lang="ts">
+import { AxiosResponse } from 'axios';
+import { User_State } from 'src/components/models';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { api } from '../boot/axios';
+import { Notify } from 'quasar';
 
 export default defineComponent({
   name: 'Login',
@@ -34,13 +38,33 @@ export default defineComponent({
     const router = useRouter();
     async function onSubmit() {
       //验证username与password，若满足则执行下面代码，跳转至/index，携带参数：username,token
-      await router.push({
-        name: 'index',
-        params: {
+      await api
+        .post('/login', {
           username: username.value,
-          token: '',
-        },
-      });
+          password: password.value,
+        })
+        .then(async function (res: AxiosResponse<User_State>) {
+          if (res.status == 200) {
+            await router.push({
+              name: 'index',
+              params: {
+                username: res.data.username,
+                token: res.data.username,
+              },
+            });
+          } else if (res.status == 400) {
+            Notify.create('密码错误！');
+          } else if (res.status == 404) {
+            Notify.create('用户不存在！');
+          }
+        });
+      // await router.push({
+      //   name: 'index',
+      //   params: {
+      //     username: username.value,
+      //     token: '',
+      //   },
+      // });
     }
 
     return {
