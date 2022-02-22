@@ -22,7 +22,11 @@ export const useMainStore = defineStore('main', {
   /**
    * 类似于组件的computed用来封装计算属性，有缓存的功能
    */
-  getters: {},
+  getters: {
+    getUsername(state) {
+      return state.userstate.username;
+    },
+  },
 
   /**
    * 类似于组建的methods，封装业务逻辑，修改state
