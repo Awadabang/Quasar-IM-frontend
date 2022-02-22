@@ -165,10 +165,12 @@
 <script lang="ts">
 import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
 import { api } from 'src/boot/axios';
-import { Conversations } from '../components/models';
+import { Conversations, User_State } from '../components/models';
+import { AxiosResponse } from 'axios';
+import { LStorage } from 'src/utils/Storage';
 
 const conversations = [] as Conversations[];
 // const conversations = [
@@ -180,37 +182,12 @@ const conversations = [] as Conversations[];
 //   time: '15:00',
 //   sent: true,
 // },
-// {
-//   id: 2,
-//   person: 'Dan Popescu',
-//   avatar: 'https://cdn.quasar.dev/team/dan_popescu.jpg',
-//   caption: "I'm working on Quasar!",
-//   time: '16:00',
-//   sent: true,
-// },
-// {
-//   id: 3,
-//   person: 'Jeff Galbraith',
-//   avatar: 'https://cdn.quasar.dev/team/jeff_galbraith.jpg',
-//   caption: "I'm working on Quasar!",
-//   time: '18:00',
-//   sent: true,
-// },
-// {
-//   id: 4,
-//   person: 'Allan Gaunt',
-//   avatar: 'https://cdn.quasar.dev/team/allan_gaunt.png',
-//   caption: "I'm working on Quasar!",
-//   time: '17:00',
-//   sent: true,
-// },
 // ];
 
 export default {
   name: 'WhatsappLayout',
 
   setup() {
-    const route = useRoute();
     const router = useRouter();
     const userState = useMainStore();
     const $q = useQuasar();
@@ -232,19 +209,24 @@ export default {
     onMounted(async () => {
       //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
       //      若有token，利用token获取用户信息，根据code：200成功、404跳回登录页面、500服务器故障
-      userState.initUsername({
-        username: String(route.params.username),
-        token: String(route.params.token),
-      });
-      if (userState.userstate.token == 'undefined') {
+      const userinfo = LStorage.get('main') as User_State;
+      if (
+        userinfo.token == null ||
+        userinfo.token == 'undefined' ||
+        userinfo.token == ''
+      ) {
         await router.replace('/');
       } else {
         await api
           .post('/verify', {
-            token: userState.userstate.token,
+            token: userinfo.token,
           })
-          .then(function (res) {
-            console.log(res);
+          .then(async function (res: AxiosResponse<User_State>) {
+            if (res.status == 200) {
+              userState.initUsername(userinfo);
+            } else if (res.status == 404 || res.status == 500) {
+              await router.replace('/');
+            }
           })
           .catch(function (err) {
             console.log(err);
