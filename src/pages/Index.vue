@@ -185,7 +185,7 @@ const conversations = [] as Conversations[];
 // ];
 
 export default {
-  name: 'WhatsappLayout',
+  name: 'IMLayout',
 
   setup() {
     const router = useRouter();
@@ -223,7 +223,7 @@ export default {
           })
           .then(async function (res: AxiosResponse<User_State>) {
             if (res.status == 200) {
-              userState.initUsername(userinfo);
+              userState.initUserstate(userinfo);
             } else if (res.status == 404 || res.status == 500) {
               await router.replace('/');
             }

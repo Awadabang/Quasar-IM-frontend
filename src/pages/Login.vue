@@ -47,7 +47,7 @@ export default defineComponent({
         })
         .then(async function (res: AxiosResponse<User_State>) {
           if (res.status == 200) {
-            userState.initUsername({
+            userState.initUserstate({
               username: res.data.username,
               token: res.data.token,
             });

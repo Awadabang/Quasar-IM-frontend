@@ -36,7 +36,7 @@ export const useMainStore = defineStore({
    * 类似于组建的methods，封装业务逻辑，修改state
    */
   actions: {
-    initUsername(userState: User_State) {
+    initUserstate(userState: User_State) {
       this.userstate.username = userState.username;
       this.userstate.token = userState.token;
     },
