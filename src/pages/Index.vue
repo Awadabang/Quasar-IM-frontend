@@ -168,10 +168,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
 import { conversationStore } from '../store/conversations';
-import { api } from 'src/boot/axios';
 import { Conversations, User_State } from '../components/models';
-import { AxiosResponse } from 'axios';
 import { LStorage } from 'src/utils/Storage';
+import { api_verify } from '../api/login';
+import { api_getConv } from 'src/api/conversation';
 
 export default {
   name: 'IMLayout',
@@ -208,48 +208,16 @@ export default {
       ) {
         await router.replace('/');
       } else {
-        await api
-          .post('/verify', {
-            token: userinfo.token,
-          })
-          .then(async function (res: AxiosResponse<User_State>) {
-            if (res.status == 200) {
-              /**
-               * 登陆成功情况：
-               * 1.登录页用户名密码验证成功->登录成功
-               * 2.从index页读取storage，token验证成功->登录成功
-               */
-
-              //将localstorage中userinfo存入state中
-              userState.initUserstate(userinfo);
-
-              //conversation都要重新拉取，防止消息滞后,这样conversations似乎不需要存入storage
-              await api
-                .get('/get_conv', {
-                  params: {
-                    page_id: 1,
-                    page_size: 10,
-                    token: userinfo.token,
-                  },
-                })
-                .then(function (res: AxiosResponse<Conversations[]>) {
-                  conv.initConvState(res.data);
-                  //conv.storageConvState();
-                  conversations.value = res.data;
-                });
-            } else if (res.status == 404 || res.status == 500) {
-              await router.replace('/');
-            }
-          })
-          .catch(function (err) {
-            console.log(err);
-          });
+        await api_verify(userinfo, router).then((res) => {
+          conversations.value = res;
+        });
       }
     });
 
     const style = computed(() => ({
       height: String($q.screen.height) + 'px',
     }));
+
     function setCurrentConversation(index: number) {
       currentConversationIndex.value.value = index;
     }
@@ -260,11 +228,16 @@ export default {
         console.log('搜索好友:', search_indrawer.value);
       }
     }
-    function changeDrawer() {
+    async function changeDrawer() {
       if (Drawer_icon.value == 'message') {
         Drawer_icon.value = 'group';
       } else {
         Drawer_icon.value = 'message';
+        await api_getConv(userState.getToken, router).then((res) => {
+          conversations.value = res;
+          //返回conversation后，将currentconversation设置为0
+          setCurrentConversation(0);
+        });
       }
       search_indrawer.value = '';
     }
