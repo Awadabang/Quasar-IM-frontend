@@ -167,22 +167,11 @@ import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
+import { conversationStore } from '../store/conversations';
 import { api } from 'src/boot/axios';
 import { Conversations, User_State } from '../components/models';
 import { AxiosResponse } from 'axios';
 import { LStorage } from 'src/utils/Storage';
-
-const conversations = [] as Conversations[];
-// const conversations = [
-// {
-//   id: 1,
-//   person: 'Razvan Stoenescu',
-//   avatar: 'https://cdn.quasar.dev/team/razvan_stoenescu.jpeg',
-//   caption: "I'm working on Quasar!",
-//   time: '15:00',
-//   sent: true,
-// },
-// ];
 
 export default {
   name: 'IMLayout',
@@ -190,19 +179,21 @@ export default {
   setup() {
     const router = useRouter();
     const userState = useMainStore();
+    const conv = conversationStore();
     const $q = useQuasar();
     const search = ref('');
     const message = ref('');
     const search_indrawer = ref('');
     const Drawer_icon = ref('message');
+    const conversations = ref([] as Conversations[]);
     const currentConversationIndex = computed(() => {
-      return conversations.length == 0 ? ref(-1) : ref(0);
+      return conv.conversations.length == 0 ? ref(-1) : ref(0);
     });
     const currentConversation = computed(() => {
       if (currentConversationIndex.value.value == -1) {
         return [] as Conversations[];
       } else {
-        return conversations[currentConversationIndex.value.value];
+        return conv.conversations[currentConversationIndex.value.value];
       }
     });
 
@@ -223,7 +214,29 @@ export default {
           })
           .then(async function (res: AxiosResponse<User_State>) {
             if (res.status == 200) {
+              /**
+               * 登陆成功情况：
+               * 1.登录页用户名密码验证成功->登录成功
+               * 2.从index页读取storage，token验证成功->登录成功
+               */
+
+              //将localstorage中userinfo存入state中
               userState.initUserstate(userinfo);
+
+              //conversation都要重新拉取，防止消息滞后,这样conversations似乎不需要存入storage
+              await api
+                .get('/get_conv', {
+                  params: {
+                    page_id: 1,
+                    page_size: 10,
+                    token: userinfo.token,
+                  },
+                })
+                .then(function (res: AxiosResponse<Conversations[]>) {
+                  conv.initConvState(res.data);
+                  //conv.storageConvState();
+                  conversations.value = res.data;
+                });
             } else if (res.status == 404 || res.status == 500) {
               await router.replace('/');
             }
@@ -263,6 +276,7 @@ export default {
       search_indrawer,
       Drawer_icon,
       currentConversationIndex,
+      conv,
       conversations,
       currentConversation,
       setCurrentConversation,
