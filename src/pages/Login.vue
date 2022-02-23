@@ -22,46 +22,50 @@
 </template>
 
 <script lang="ts">
-import { AxiosResponse } from 'axios';
-import { useMainStore } from '../store/index';
-import { User_State } from 'src/components/models';
+//import { useMainStore } from '../store/index';
+// import { AxiosResponse } from 'axios';
+// import { User_State } from 'src/components/models';
 import { defineComponent, ref } from 'vue';
+import { api_login } from '../api/login';
 import { useRouter } from 'vue-router';
-import { api } from '../boot/axios';
-import { Notify } from 'quasar';
+// import { api } from '../boot/axios';
+// import { Notify } from 'quasar';
 
 export default defineComponent({
   name: 'Login',
   setup() {
-    const userState = useMainStore();
+    // const userState = useMainStore();
     const username = ref('');
     const password = ref('');
-    //↓路径跳转
+    //↓路径信息
     const router = useRouter();
-    async function onSubmit() {
+    function onSubmit() {
       //验证username与password，若满足则执行下面代码，跳转至/index，携带参数：username,token
-      await api
-        .post('/login', {
-          username: username.value,
-          password: password.value,
-        })
-        .then(async function (res: AxiosResponse<User_State>) {
-          if (res.status == 200) {
-            userState.initUserstate({
-              username: res.data.username,
-              token: res.data.token,
-            });
-            userState.storageUserinfo();
-            Notify.create('登录成功！');
-            await router.push({
-              name: 'index',
-            });
-          } else if (res.status == 400) {
-            Notify.create('密码错误！');
-          } else if (res.status == 404) {
-            Notify.create('用户不存在！');
-          }
-        });
+      api_login(username.value, password.value, router).catch((res) => {
+        console.log(res);
+      });
+      // await api
+      //   .post('/login', {
+      //     username: username.value,
+      //     password: password.value,
+      //   })
+      //   .then(async function (res: AxiosResponse<User_State>) {
+      //     if (res.status == 200) {
+      //       userState.initUserstate({
+      //         username: res.data.username,
+      //         token: res.data.token,
+      //       });
+      //       userState.storageUserinfo();
+      //       Notify.create('登录成功！');
+      //       await router.push({
+      //         name: 'index',
+      //       });
+      //     } else if (res.status == 400) {
+      //       Notify.create('密码错误！');
+      //     } else if (res.status == 404) {
+      //       Notify.create('用户不存在！');
+      //     }
+      //   });
       // await router.push({
       //   name: 'index',
       //   params: {
