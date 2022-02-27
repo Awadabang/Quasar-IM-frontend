@@ -13,7 +13,6 @@ export async function api_getConv(token: string, router: Router) {
       params: {
         page_id: 1,
         page_size: 10,
-        token: token,
       },
     })
     .then(async function (res: AxiosResponse<Conversations[]>) {

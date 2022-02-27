@@ -41,9 +41,7 @@ export async function api_login(
 export async function api_verify(userinfo: User_State, router: Router) {
   let conversations = [] as Conversations[];
   await api
-    .post('/verify', {
-      token: userinfo.token,
-    })
+    .post('/verify', {})
     .then(async function (res: AxiosResponse<User_State>) {
       if (res.status == 200) {
         /**
@@ -60,7 +58,6 @@ export async function api_verify(userinfo: User_State, router: Router) {
             params: {
               page_id: 1,
               page_size: 10,
-              token: userinfo.token,
             },
           })
           .then(function (res: AxiosResponse<Conversations[]>) {
