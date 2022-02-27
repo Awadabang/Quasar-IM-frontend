@@ -6,6 +6,8 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { LStorage } from '../utils/Storage';
+import { User_State } from 'src/components/models';
 
 /*
  * If not building with SSR mode, you can
@@ -33,6 +35,13 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
     ),
+  });
+
+  Router.beforeEach((to, from, next) => {
+    const userinfo = LStorage.get('main') as User_State;
+    const token = userinfo ? userinfo.token : null;
+    if (to.meta.requiresAuth && !token) next({ name: 'login' });
+    else next();
   });
 
   return Router;
