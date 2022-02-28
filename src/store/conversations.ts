@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { Conversations } from 'src/components/models';
 import { store } from 'quasar/wrappers';
-import { LStorage } from '../utils/Storage';
+import { LStorage } from 'src/utils/Storage';
 
 export default store;
 

@@ -1,9 +1,9 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
-import { LStorage } from 'src/utils/Storage';
 import { User_State } from 'src/components/models';
 import { useRouter } from 'vue-router';
 import { respError } from 'src/components/response';
+import { LStorage } from 'src/utils/Storage';
 const router = useRouter();
 
 declare module '@vue/runtime-core' {

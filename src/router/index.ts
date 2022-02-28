@@ -6,8 +6,8 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
-import { LStorage } from '../utils/Storage';
 import { User_State } from 'src/components/models';
+import { LStorage } from 'src/utils/Storage';
 
 /*
  * If not building with SSR mode, you can

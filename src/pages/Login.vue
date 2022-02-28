@@ -37,7 +37,6 @@ export default defineComponent({
     //↓路径信息
     const router = useRouter();
     function onSubmit() {
-      //验证username与password，若满足则执行下面代码，跳转至/index，携带参数：username,token
       api_login(username.value, password.value, router).catch((res) => {
         console.log(res);
       });

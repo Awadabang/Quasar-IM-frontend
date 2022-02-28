@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { User_State } from 'src/components/models';
 import { store } from 'quasar/wrappers';
-import { LStorage } from '../utils/Storage';
+import { LStorage } from 'src/utils/Storage';
 export default store;
 
 export const useMainStore = defineStore({
@@ -16,7 +16,7 @@ export const useMainStore = defineStore({
 
   state: () => {
     return {
-      userstate: {} as User_State,
+      userstate: (LStorage.get('main') || {}) as User_State,
     };
   },
 

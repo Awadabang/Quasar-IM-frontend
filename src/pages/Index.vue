@@ -195,14 +195,6 @@ export default {
       }
     });
 
-    // onMounted(async () => {
-    //   //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
-    //     await api_verify(router).then((res) => {
-    //       conversations.value = res;
-    //     });
-    //   }
-    // });
-
     const style = computed(() => ({
       height: String($q.screen.height) + 'px',
     }));
