@@ -50,7 +50,7 @@ api.interceptors.response.use(
     // 对响应数据做点什么
     const { status } = response;
     const data = response.data as respError;
-    console.log(data.message);
+    console.log('响应拦截器', data.message);
     if (status === 401) {
       void router.push({
         name: 'login',

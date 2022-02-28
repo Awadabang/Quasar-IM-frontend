@@ -37,33 +37,34 @@ export async function api_login(
 }
 
 /**
- * 获取店铺签约合同信息
- * @param userinfo 标签id {number}, router 路径
- * @returns conversations 用户名称 {string}
+ * 验证token合法
+ * @returns Boolean 合法=1 不合法=0
  */
-// export async function api_verify(router: Router) {
-//   await api
-//     .post('/verify', {})
-//     .then(async function (res: AxiosResponse<User_State>) {
-//       if (res.status == 200) {
-//         await api
-//           .get('/get_conv', {
-//             params: {
-//               page_id: 1,
-//               page_size: 10,
-//             },
-//           })
-//           .then(function (res: AxiosResponse<Conversations[]>) {
-//             convState.initConvState(res.data);
-//             conversations = res.data;
-//           });
-//       } else if (res.status == 404 || res.status == 500) {
-//         await router.replace('/');
-//       }
-//     })
-//     .catch(function (err) {
-//       console.log(err);
-//     });
-
-//   return conversations;
-// }
+export async function api_verify() {
+  let flag = false;
+  await api
+    .post('/verify', {})
+    .then(function (res: AxiosResponse<User_State>) {
+      if (res.status == 200) {
+        // await api
+        //   .get('/get_conv', {
+        //     params: {
+        //       page_id: 1,
+        //       page_size: 10,
+        //     },
+        //   })
+        //   .then(function (res: AxiosResponse<Conversations[]>) {
+        //     convState.initConvState(res.data);
+        //     conversations = res.data;
+        //   });
+        flag = true;
+      } else if (res.status == 401) {
+        // Notify.create('登录状态异常')
+        // await router.replace('/');
+      }
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  return flag;
+}

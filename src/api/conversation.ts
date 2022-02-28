@@ -6,7 +6,12 @@ import { conversationStore } from 'src/store/conversations';
 
 const convState = conversationStore();
 
-export async function api_getConv(token: string, router: Router) {
+/**
+ * 请求对话列表
+ * @param router
+ * @returns conversations[]
+ */
+export async function api_getConv(router: Router) {
   let conversations = [] as Conversations[];
   await api
     .get('/get_conv', {

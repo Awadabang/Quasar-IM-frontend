@@ -164,12 +164,13 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
 import { conversationStore } from '../store/conversations';
 import { Conversations } from '../components/models';
 import { api_getConv } from 'src/api/conversation';
+import { api_verify } from 'src/api/login';
 
 export default {
   name: 'IMLayout',
@@ -195,6 +196,16 @@ export default {
       }
     });
 
+    onMounted(() => {
+      void api_verify().then((res) => {
+        if (res) {
+          void api_getConv(router).then((res) => {
+            conversations.value = res;
+          });
+        }
+      });
+    });
+
     const style = computed(() => ({
       height: String($q.screen.height) + 'px',
     }));
@@ -214,7 +225,7 @@ export default {
         Drawer_icon.value = 'group';
       } else {
         Drawer_icon.value = 'message';
-        await api_getConv(userState.getToken, router).then((res) => {
+        await api_getConv(router).then((res) => {
           conversations.value = res;
           //返回conversation后，将currentconversation设置为0
           setCurrentConversation(0);
