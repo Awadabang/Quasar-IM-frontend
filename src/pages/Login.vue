@@ -23,11 +23,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { api_login } from '../api/login';
 import { useRouter } from 'vue-router';
-import { LStorage } from 'src/utils/Storage';
-import { User_State } from '../components/models';
 
 export default defineComponent({
   name: 'Login',
@@ -35,17 +33,6 @@ export default defineComponent({
   setup() {
     const username = ref('');
     const password = ref('');
-
-    onMounted(async () => {
-      //加载页面前，判断是否已经登陆，若无token，跳回登录页面
-      //若有token，利用token获取用户信息，根据code：200成功、404跳回登录页面、500服务器故障
-      const userinfo = LStorage.get('main') as User_State;
-      if (userinfo) {
-        await router.push({
-          name: 'index',
-        });
-      }
-    });
 
     //↓路径信息
     const router = useRouter();

@@ -1,13 +1,11 @@
 import { api } from '../boot/axios';
 import { AxiosResponse } from 'axios';
 import { Notify } from 'quasar';
-import { Conversations, User_State } from 'src/components/models';
+import { User_State } from 'src/components/models';
 import { useMainStore } from '../store/index';
-import { conversationStore } from '../store/conversations';
 import { Router } from 'vue-router';
 
 const userState = useMainStore();
-const convState = conversationStore();
 
 export async function api_login(
   username: string,
@@ -38,39 +36,34 @@ export async function api_login(
     });
 }
 
-export async function api_verify(userinfo: User_State, router: Router) {
-  let conversations = [] as Conversations[];
-  await api
-    .post('/verify', {})
-    .then(async function (res: AxiosResponse<User_State>) {
-      if (res.status == 200) {
-        /**
-         * 登陆成功情况：
-         * 1.登录页用户名密码验证成功->登录成功
-         * 2.从index页读取storage，token验证成功->登录成功
-         */
-        //将localstorage中userinfo存入state中
-        userState.initUserstate(userinfo);
+/**
+ * 获取店铺签约合同信息
+ * @param userinfo 标签id {number}, router 路径
+ * @returns conversations 用户名称 {string}
+ */
+// export async function api_verify(router: Router) {
+//   await api
+//     .post('/verify', {})
+//     .then(async function (res: AxiosResponse<User_State>) {
+//       if (res.status == 200) {
+//         await api
+//           .get('/get_conv', {
+//             params: {
+//               page_id: 1,
+//               page_size: 10,
+//             },
+//           })
+//           .then(function (res: AxiosResponse<Conversations[]>) {
+//             convState.initConvState(res.data);
+//             conversations = res.data;
+//           });
+//       } else if (res.status == 404 || res.status == 500) {
+//         await router.replace('/');
+//       }
+//     })
+//     .catch(function (err) {
+//       console.log(err);
+//     });
 
-        //conversation都要重新拉取，防止消息滞后,这样conversations似乎不需要存入storage
-        await api
-          .get('/get_conv', {
-            params: {
-              page_id: 1,
-              page_size: 10,
-            },
-          })
-          .then(function (res: AxiosResponse<Conversations[]>) {
-            convState.initConvState(res.data);
-            conversations = res.data;
-          });
-      } else if (res.status == 404 || res.status == 500) {
-        await router.replace('/');
-      }
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-
-  return conversations;
-}
+//   return conversations;
+// }

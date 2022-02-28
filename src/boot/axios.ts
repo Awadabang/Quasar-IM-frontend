@@ -2,6 +2,9 @@ import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
 import { LStorage } from 'src/utils/Storage';
 import { User_State } from 'src/components/models';
+import { useRouter } from 'vue-router';
+import { respError } from 'src/components/response';
+const router = useRouter();
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -35,6 +38,7 @@ api.interceptors.request.use(
   },
   function (error) {
     // 对请求错误做些什么
+    console.log('Axios interceptors error');
     return Promise.reject(error);
   }
 );
@@ -44,6 +48,14 @@ api.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
+    const { status } = response;
+    const data = response.data as respError;
+    console.log(data.message);
+    if (status === 401) {
+      void router.push({
+        name: 'login',
+      });
+    }
     return response;
   },
   function (error) {

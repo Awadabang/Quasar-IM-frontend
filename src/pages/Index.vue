@@ -164,14 +164,12 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
 import { conversationStore } from '../store/conversations';
-import { Conversations, User_State } from '../components/models';
-import { LStorage } from 'src/utils/Storage';
+import { Conversations } from '../components/models';
 import { api_getConv } from 'src/api/conversation';
-import { api_verify } from 'src/api/login';
 
 export default {
   name: 'IMLayout',
@@ -197,22 +195,13 @@ export default {
       }
     });
 
-    onMounted(async () => {
-      //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
-      //      若有token，利用token获取用户信息，根据code：200成功、404跳回登录页面、500服务器故障
-      const userinfo = LStorage.get('main') as User_State;
-      if (
-        userinfo.token == null ||
-        userinfo.token == 'undefined' ||
-        userinfo.token == ''
-      ) {
-        await router.replace('/');
-      } else {
-        await api_verify(userinfo, router).then((res) => {
-          conversations.value = res;
-        });
-      }
-    });
+    // onMounted(async () => {
+    //   //TODO: 加载页面前，判断是否已经登陆，若无token，跳回登录页面
+    //     await api_verify(router).then((res) => {
+    //       conversations.value = res;
+    //     });
+    //   }
+    // });
 
     const style = computed(() => ({
       height: String($q.screen.height) + 'px',

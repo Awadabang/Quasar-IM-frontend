@@ -41,6 +41,7 @@ export default route(function (/* { store, ssrContext } */) {
     const userinfo = LStorage.get('main') as User_State;
     const token = userinfo ? userinfo.token : null;
     if (to.meta.requiresAuth && !token) next({ name: 'login' });
+    else if (to.name == 'login' && token) next({ name: 'index' });
     else next();
   });
 
