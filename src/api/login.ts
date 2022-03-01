@@ -18,6 +18,8 @@ export async function api_login(
       password: password,
     })
     .then(async function (res: AxiosResponse<User_State>) {
+      console.log(res);
+
       if (res.status == 200) {
         userState.initUserstate({
           username: res.data.username,
@@ -42,29 +44,10 @@ export async function api_login(
  */
 export async function api_verify() {
   let flag = false;
-  await api
-    .post('/verify', {})
-    .then(function (res: AxiosResponse<User_State>) {
-      if (res.status == 200) {
-        // await api
-        //   .get('/get_conv', {
-        //     params: {
-        //       page_id: 1,
-        //       page_size: 10,
-        //     },
-        //   })
-        //   .then(function (res: AxiosResponse<Conversations[]>) {
-        //     convState.initConvState(res.data);
-        //     conversations = res.data;
-        //   });
-        flag = true;
-      } else if (res.status == 401) {
-        // Notify.create('登录状态异常')
-        // await router.replace('/');
-      }
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
+  await api.post('/verify').then(function (res: AxiosResponse<User_State>) {
+    if (res.status == 200) {
+      flag = true;
+    }
+  });
   return flag;
 }

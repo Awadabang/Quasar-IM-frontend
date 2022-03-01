@@ -197,11 +197,13 @@ export default {
     });
 
     onMounted(() => {
-      void api_verify().then((res) => {
+      void api_verify().then(async (res) => {
         if (res) {
           void api_getConv(router).then((res) => {
             conversations.value = res;
           });
+        } else {
+          await router.replace('/');
         }
       });
     });

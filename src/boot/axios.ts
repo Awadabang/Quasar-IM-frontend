@@ -2,7 +2,6 @@ import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
 import { User_State } from 'src/components/models';
 import { useRouter } from 'vue-router';
-import { respError } from 'src/components/response';
 import { LStorage } from 'src/utils/Storage';
 const router = useRouter();
 
@@ -23,7 +22,7 @@ interface AxiosRequestConfig {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'http://127.0.0.1:4523/mock/658031' });
+const api = axios.create({ baseURL: 'http://122.112.179.149:8000' });
 
 // 添加请求拦截器
 api.interceptors.request.use(
@@ -49,8 +48,6 @@ api.interceptors.response.use(
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     const { status } = response;
-    const data = response.data as respError;
-    console.log('响应拦截器', data.message);
     if (status === 401) {
       void router.push({
         name: 'login',
