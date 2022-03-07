@@ -6,14 +6,26 @@
           <q-btn round flat>
             <q-avatar>
               <img
-                v-show="currentConversation.avatar"
-                :src="currentConversation.avatar"
+                v-show="
+                  currentConversation == undefined
+                    ? null
+                    : currentConversation.avatar
+                "
+                :src="
+                  currentConversation == undefined
+                    ? null
+                    : currentConversation.avatar
+                "
               />
             </q-avatar>
           </q-btn>
 
           <span class="q-subtitle-1 q-pl-md">
-            {{ currentConversation.person }}
+            {{
+              currentConversation == undefined
+                ? null
+                : currentConversation.person
+            }}
           </span>
 
           <q-space />
@@ -105,7 +117,7 @@
         <q-scroll-area style="height: calc(100% - 100px)">
           <q-list>
             <q-item
-              v-for="(conversation, index) in conversations"
+              v-for="(conversation, index) in conv.conversations"
               :key="conversation.id"
               clickable
               v-ripple
@@ -184,19 +196,20 @@ export default {
     const message = ref('');
     const search_indrawer = ref('');
     const Drawer_icon = ref('message');
-    const conversations = ref([] as Conversations[]);
     const currentConversationIndex = computed(() => {
       return conv.conversations.length == 0 ? ref(-1) : ref(0);
     });
     const currentConversation = computed(() => {
       if (currentConversationIndex.value.value == -1) {
-        return [] as Conversations[];
+        return {} as Conversations;
       } else {
         return conv.conversations[currentConversationIndex.value.value];
       }
     });
 
     onMounted(() => {
+      console.log(currentConversation.value);
+
       void api_verify().then(async (res) => {
         if (res) {
           void api_getConv(router);
@@ -241,7 +254,6 @@ export default {
       Drawer_icon,
       currentConversationIndex,
       conv,
-      conversations,
       currentConversation,
       setCurrentConversation,
       style,
