@@ -199,9 +199,7 @@ export default {
     onMounted(() => {
       void api_verify().then(async (res) => {
         if (res) {
-          void api_getConv(router).then((res) => {
-            conversations.value = res;
-          });
+          void api_getConv(router);
         } else {
           await router.replace('/');
         }
@@ -227,8 +225,7 @@ export default {
         Drawer_icon.value = 'group';
       } else {
         Drawer_icon.value = 'message';
-        await api_getConv(router).then((res) => {
-          conversations.value = res;
+        await api_getConv(router).then(() => {
           //返回conversation后，将currentconversation设置为0
           setCurrentConversation(0);
         });

@@ -22,7 +22,10 @@ export async function api_getConv(router: Router) {
     })
     .then(async function (res: AxiosResponse<Conversations[]>) {
       if (res.status == 200) {
-        //conversation都要重新拉取，防止消息滞后,这样conversations似乎不需要存入storage
+        //检查返回的data是否为空
+        if (res.data == null) {
+          return conversations;
+        }
         convState.initConvState(res.data);
         conversations = res.data;
       } else if (res.status == 404 || res.status == 500) {

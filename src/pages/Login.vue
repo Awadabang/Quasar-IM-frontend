@@ -37,8 +37,8 @@ export default defineComponent({
     //↓路径信息
     const router = useRouter();
     function onSubmit() {
-      api_login(username.value, password.value, router).catch((res) => {
-        console.log(res);
+      api_login(username.value, password.value, router).catch(() => {
+        // console.log(res);
       });
     }
 
