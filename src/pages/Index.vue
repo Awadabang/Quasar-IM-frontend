@@ -3,7 +3,7 @@
     <q-layout view="lHh Lpr lFf" class="WAL__layout shadow-3" container>
       <q-header elevated>
         <q-toolbar class="bg-grey-3 text-black">
-          <q-btn round flat>
+          <q-btn round flat style="cursor: default">
             <q-avatar>
               <img
                 v-show="
@@ -90,6 +90,9 @@
               <q-list style="min-width: 150px">
                 <q-item clickable>
                   <q-item-section>添加朋友</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>退出登录</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
@@ -208,8 +211,6 @@ export default {
     });
 
     onMounted(() => {
-      console.log(currentConversation.value);
-
       void api_verify().then(async (res) => {
         if (res) {
           void api_getConv(router);

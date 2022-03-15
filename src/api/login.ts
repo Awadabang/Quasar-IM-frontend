@@ -40,6 +40,7 @@ export async function api_login(
 
 /**
  * 验证token合法
+ * @res Boolean 合法=1 不合法=0
  * @returns Boolean 合法=1 不合法=0
  */
 export async function api_verify() {
