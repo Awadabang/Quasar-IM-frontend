@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  im-nginx: # 前端node容器(运行nginx中的Vue项目)
+    restart: always # 重启策略: 容器退出时总是重启容器
+    build:
+      context: ./ # 指定设定上下文根目录，然后以该目录为准指定Dockerfile
+      dockerfile: docker/Dockerfile
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - '80:8101' # 映射端口
+    # networks:
+    #   - geosphere-network-web # 设置网卡
+# networks:
+#   im-network-web:
+#     driver: bridge
