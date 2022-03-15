@@ -22,7 +22,7 @@ interface AxiosRequestConfig {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'http://127.0.0.1:8000' });
+const api = axios.create({ baseURL: 'http://120.46.139.146:8000' });
 
 // 添加请求拦截器
 api.interceptors.request.use(
