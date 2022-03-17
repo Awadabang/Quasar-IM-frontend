@@ -30,7 +30,7 @@ RUN rm /etc/nginx/nginx.conf
 # 把主机的nginx.conf文件复制到nginx容器的/etc/nginx文件夹下
 COPY ./docker/nginx.conf /etc/nginx/
 # 拷贝前端vue项目打包后生成的文件到nginx下运行
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /app/dist/spa /usr/share/nginx/html
 
 # 暴露8101端口
 EXPOSE 8101
