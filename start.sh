@@ -35,7 +35,7 @@ echo '删除已废弃的 images'
   docker rmi $(docker images  |grep none | awk -F " " '{print $3}')
 
 
-cd /home/kzzk
+cd /home/$file_name
 git clone git@github.com:Awadabang/Quasar-IM-frontend.git
 # shellcheck disable=SC2164
 cd  /root/$file_name
