@@ -31,7 +31,7 @@ api.interceptors.request.use(
     const userinfo = LStorage.get('main') as User_State;
     if (userinfo) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      config.headers!.Authorization = `Bearer ${userinfo.token}`;
+      config.headers!.Authorization = `${userinfo.access_token}`;
     }
     return config;
   },

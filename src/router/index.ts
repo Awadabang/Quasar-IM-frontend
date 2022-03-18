@@ -39,9 +39,9 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => {
     const userinfo = LStorage.get('main') as User_State;
-    const token = userinfo ? userinfo.token : null;
-    if (to.meta.requiresAuth && !token) next({ name: 'login' });
-    else if (to.name == 'login' && token) next({ name: 'index' });
+    const access_token = userinfo ? userinfo.access_token : null;
+    if (to.meta.requiresAuth && !access_token) next({ name: 'login' });
+    else if (to.name == 'login' && access_token) next({ name: 'index' });
     else next();
   });
 

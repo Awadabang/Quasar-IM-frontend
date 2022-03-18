@@ -14,9 +14,12 @@ export const useMainStore = defineStore({
    *
    */
 
-  state: () => {
+  state: (): User_State => {
     return {
-      userstate: (LStorage.get('main') || {}) as User_State,
+      user: {
+        username: '',
+      },
+      access_token: '',
     };
   },
 
@@ -25,10 +28,10 @@ export const useMainStore = defineStore({
    */
   getters: {
     getUsername(): string {
-      return this.userstate.username;
+      return this.user.username;
     },
     getToken(): string {
-      return this.userstate.token;
+      return this.access_token;
     },
   },
 
@@ -37,13 +40,13 @@ export const useMainStore = defineStore({
    */
   actions: {
     initUserstate(userState: User_State) {
-      this.userstate.username = userState.username;
-      this.userstate.token = userState.token;
+      this.user.username = userState.user.username;
+      this.access_token = userState.access_token;
     },
     storageUserinfo() {
       LStorage.set('main', {
-        username: this.userstate.username,
-        token: this.userstate.token,
+        username: this.user.username,
+        access_token: this.access_token,
       });
     },
   },

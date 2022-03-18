@@ -26,6 +26,8 @@
 import { computed, defineComponent, ref } from 'vue';
 import { api_login } from '../api/login';
 import { useRouter } from 'vue-router';
+import { Notify } from 'quasar';
+import { useMainStore } from '../store/index';
 
 export default defineComponent({
   name: 'Login',
@@ -36,9 +38,30 @@ export default defineComponent({
 
     //↓路径信息
     const router = useRouter();
-    function onSubmit() {
-      api_login(username.value, password.value, router).catch(() => {
-        // console.log(res);
+    //↓Pinia信息
+    const userState = useMainStore();
+
+    async function onSubmit() {
+      await api_login(username.value, password.value).then(async function (
+        res
+      ) {
+        if (res.status == 200) {
+          userState.initUserstate({
+            access_token: res.data.access_token,
+            user: {
+              username: res.data.user.username,
+            },
+          });
+          userState.storageUserinfo();
+          Notify.create('登录成功！');
+          await router.replace({
+            name: 'index',
+          });
+        } else if (res.status == 400) {
+          Notify.create('密码错误！');
+        } else if (res.status == 404) {
+          Notify.create('用户不存在！');
+        }
       });
     }
 

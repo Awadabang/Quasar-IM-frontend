@@ -18,10 +18,10 @@ class MyStorage {
     this.storage.setItem(key, data);
   }
 
-  get(key: string) {
+  get(key: string): unknown {
     const value = this.storage.getItem(key);
+
     if (value) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return JSON.parse(value);
     }
   }

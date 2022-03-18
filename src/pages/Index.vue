@@ -186,6 +186,7 @@ import { conversationStore } from '../store/conversations';
 import { Conversations } from '../components/models';
 import { api_getConv } from 'src/api/conversation';
 import { api_verify } from 'src/api/login';
+import { LStorage } from 'src/utils/Storage';
 
 export default {
   name: 'IMLayout',
@@ -210,14 +211,22 @@ export default {
       }
     });
 
-    onMounted(() => {
-      void api_verify().then(async (res) => {
-        if (res) {
-          void api_getConv(router);
-        } else {
-          await router.replace('/');
-        }
-      });
+    onMounted(async () => {
+      //直接打开index页面检查localstorage中有无access_token,如果没有数据直接跳入login，有数据发送
+      //veirfy接口验证token合法性
+      if (LStorage.get('main') != null) {
+        void api_verify().then(async (res) => {
+          if (res.status == 200) {
+            //TODO: 合法重新绑定pinia
+            userState.initUserstate(res.data);
+            void api_getConv(router);
+          } else {
+            await router.replace('/');
+          }
+        });
+      } else {
+        await router.replace('/');
+      }
     });
 
     const style = computed(() => ({

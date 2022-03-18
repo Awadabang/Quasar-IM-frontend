@@ -1,6 +1,8 @@
 export interface User_State {
-  username: string;
-  token: string;
+  access_token: string;
+  user: {
+    username: string;
+  };
 }
 
 export interface Conversations {
