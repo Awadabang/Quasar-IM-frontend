@@ -1,5 +1,5 @@
 import { boot } from 'quasar/wrappers';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { User_State } from 'src/components/models';
 import { useRouter } from 'vue-router';
 import { LStorage } from 'src/utils/Storage';
@@ -55,10 +55,12 @@ api.interceptors.response.use(
     }
     return response;
   },
-  function (error) {
+  function (error: AxiosError) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
-    return Promise.reject(error);
+    const { response } = error;
+
+    return Promise.reject(response);
   }
 );
 

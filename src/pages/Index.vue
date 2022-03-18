@@ -91,7 +91,7 @@
                 <q-item clickable>
                   <q-item-section>添加朋友</q-item-section>
                 </q-item>
-                <q-item clickable>
+                <q-item clickable @click="quit">
                   <q-item-section>退出登录</q-item-section>
                 </q-item>
               </q-list>
@@ -187,6 +187,7 @@ import { Conversations } from '../components/models';
 import { api_getConv } from 'src/api/conversation';
 import { api_verify } from 'src/api/login';
 import { LStorage } from 'src/utils/Storage';
+import { AxiosResponse } from 'axios';
 
 export default {
   name: 'IMLayout',
@@ -212,18 +213,26 @@ export default {
     });
 
     onMounted(async () => {
-      //直接打开index页面检查localstorage中有无access_token,如果没有数据直接跳入login，有数据发送
-      //veirfy接口验证token合法性
+      //直接打开index页面检查localstorage中有无access_token
+      //如果没有数据直接跳入login
+      //有数据发送veirfy接口验证token合法性，若不合法，删除localstorage，跳至login
       if (LStorage.get('main') != null) {
-        void api_verify().then(async (res) => {
-          if (res.status == 200) {
-            //TODO: 合法重新绑定pinia
-            userState.initUserstate(res.data);
-            void api_getConv(router);
-          } else {
-            await router.replace('/');
-          }
-        });
+        void api_verify()
+          .then(async (res) => {
+            if (res.status == 200) {
+              userState.initUserstate(res.data);
+              void api_getConv(router);
+            } else {
+              await router.replace('/');
+            }
+          })
+          .catch(async function (err: AxiosResponse) {
+            if (err.status != 200) {
+              await quit();
+
+              await router.replace('/');
+            }
+          });
       } else {
         await router.replace('/');
       }
@@ -256,6 +265,25 @@ export default {
       search_indrawer.value = '';
     }
 
+    /**
+     * 退出登录
+     * 1.删除localstorage
+     * 2.删除pinia
+     * 3.跳转至login页
+     */
+    async function quit() {
+      LStorage.clear();
+      userState.initUserstate({
+        user: {
+          username: '',
+        },
+        access_token: '',
+      });
+      await router.replace({
+        name: 'login',
+      });
+    }
+
     return {
       userState,
       search,
@@ -269,6 +297,7 @@ export default {
       style,
       search_InDrawer,
       changeDrawer,
+      quit,
     };
   },
 };
