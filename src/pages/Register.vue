@@ -65,9 +65,7 @@ export default defineComponent({
         .then(async function (res) {
           if (res.status == 200) {
             Notify.create('注册成功！');
-            await router.replace({
-              name: 'login',
-            });
+            await router.replace('/');
           }
         })
         .catch(function (err: AxiosResponse) {

@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2022-02-24 00:08:29
+ * @LastEditTime: 2022-03-20 18:50:39
+ * @LastEditors: your name
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \Quasar-IM-frontend\src\api\conversation.ts
+ */
 import { api } from '../boot/axios';
 import { AxiosResponse } from 'axios';
 import { Conversations } from 'src/components/models';
@@ -14,7 +22,7 @@ const convState = conversationStore();
 export async function api_getConv(router: Router) {
   let conversations = [] as Conversations[];
   await api
-    .get('/get_conv', {
+    .get('api/v1/get_conv', {
       params: {
         page_id: 1,
         page_size: 10,

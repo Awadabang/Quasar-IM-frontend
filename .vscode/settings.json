@@ -5,5 +5,23 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  // 头部注释
+"fileheader.customMade": {
+  // 头部注释默认字段
+  "Author": "Awadabang",
+  "Date": "Do not edit", // 设置后默认设置文件生成时间
+  "LastEditTime": "Do not edit", // 设置后，保存文件更改默认更新最后编辑时间
+  "LastEditors": "Awadabang", // 设置后，保存文件更改默认更新最后编辑人
+  "Description": "Description",
+  "FilePath": "Do not edit", // 设置后，默认生成文件相对于项目的路径
+  "custom_string_obkoro1": ""
+},
+// 函数注释
+"fileheader.cursorMode": {
+// 默认字段
+"description":"",
+"param":"",
+"return":""
+},
 }

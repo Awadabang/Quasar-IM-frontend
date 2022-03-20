@@ -7,14 +7,14 @@
             <q-avatar>
               <img
                 v-show="
-                  currentConversation == undefined
+                  friend.currentFriend == {}
                     ? null
-                    : currentConversation.avatar
+                    : friend.currentFriend.avatar
                 "
                 :src="
-                  currentConversation == undefined
+                  friend.currentFriend == {}
                     ? null
-                    : currentConversation.avatar
+                    : friend.currentFriend.avatar
                 "
               />
             </q-avatar>
@@ -22,9 +22,7 @@
 
           <span class="q-subtitle-1 q-pl-md">
             {{
-              currentConversation == undefined
-                ? null
-                : currentConversation.person
+              friend.currentFriend == {} ? null : friend.currentFriend.username
             }}
           </span>
 
@@ -116,46 +114,11 @@
             </template>
           </q-input>
         </q-toolbar>
-
-        <q-scroll-area style="height: calc(100% - 100px)">
-          <q-list>
-            <q-item
-              v-for="(conversation, index) in conv.conversations"
-              :key="conversation.id"
-              clickable
-              v-ripple
-              @click="setCurrentConversation(index)"
-            >
-              <q-item-section avatar>
-                <q-avatar>
-                  <img :src="conversation.avatar" />
-                </q-avatar>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ conversation.person }}
-                </q-item-label>
-                <q-item-label class="conversation__summary" caption>
-                  <q-icon name="check" v-if="conversation.sent" />
-                  <q-icon name="not_interested" v-if="conversation.deleted" />
-                  {{ conversation.caption }}
-                </q-item-label>
-              </q-item-section>
-
-              <q-item-section side>
-                <q-item-label caption>
-                  {{ conversation.time }}
-                </q-item-label>
-                <q-icon name="keyboard_arrow_down" />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-scroll-area>
+        <router-view name="friend" />
       </q-drawer>
 
       <q-page-container class="WAL__chat bg-grey-2">
-        <router-view />
+        <router-view name="chat" />
       </q-page-container>
 
       <q-footer>
@@ -182,12 +145,12 @@ import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '../store/index';
-import { conversationStore } from '../store/conversations';
-import { Conversations } from '../components/models';
 import { api_getConv } from 'src/api/conversation';
 import { api_verify } from 'src/api/login';
 import { LStorage } from 'src/utils/Storage';
 import { AxiosResponse } from 'axios';
+import { api_getFriends } from 'src/api/friend';
+import { friendsStore } from 'src/store/friends';
 
 export default {
   name: 'IMLayout',
@@ -195,22 +158,12 @@ export default {
   setup() {
     const router = useRouter();
     const userState = useMainStore();
-    const conv = conversationStore();
     const $q = useQuasar();
     const search = ref('');
     const message = ref('');
     const search_indrawer = ref('');
     const Drawer_icon = ref('message');
-    const currentConversationIndex = computed(() => {
-      return conv.conversations.length == 0 ? ref(-1) : ref(0);
-    });
-    const currentConversation = computed(() => {
-      if (currentConversationIndex.value.value == -1) {
-        return {} as Conversations;
-      } else {
-        return conv.conversations[currentConversationIndex.value.value];
-      }
-    });
+    const friend = friendsStore();
 
     onMounted(async () => {
       //直接打开index页面检查localstorage中有无access_token
@@ -222,6 +175,7 @@ export default {
             if (res.status == 200) {
               userState.initUserstate(res.data);
               void api_getConv(router);
+              void api_getFriends(router);
             } else {
               await router.replace('/');
             }
@@ -242,12 +196,10 @@ export default {
       height: String($q.screen.height) + 'px',
     }));
 
-    function setCurrentConversation(index: number) {
-      currentConversationIndex.value.value = index;
-    }
     function search_InDrawer() {
       if (Drawer_icon.value == 'message') {
         console.log('搜索对话:', search_indrawer.value);
+        //搜索函数↓
       } else {
         console.log('搜索好友:', search_indrawer.value);
       }
@@ -255,12 +207,12 @@ export default {
     async function changeDrawer() {
       if (Drawer_icon.value == 'message') {
         Drawer_icon.value = 'group';
+        await api_getFriends(router).then(async () => {
+          await api_getFriends(router);
+        });
       } else {
         Drawer_icon.value = 'message';
-        await api_getConv(router).then(() => {
-          //返回conversation后，将currentconversation设置为0
-          setCurrentConversation(0);
-        });
+        await api_getConv(router);
       }
       search_indrawer.value = '';
     }
@@ -279,21 +231,16 @@ export default {
         },
         access_token: '',
       });
-      await router.replace({
-        name: 'login',
-      });
+      await router.replace('/');
     }
 
     return {
+      friend,
       userState,
       search,
       message,
       search_indrawer,
       Drawer_icon,
-      currentConversationIndex,
-      conv,
-      currentConversation,
-      setCurrentConversation,
       style,
       search_InDrawer,
       changeDrawer,
