@@ -22,7 +22,8 @@ interface AxiosRequestConfig {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'http://120.46.139.146:8000' });
+const baseURL = '120.46.139.146:8000';
+const api = axios.create({ baseURL: 'http://' + baseURL });
 
 // 添加请求拦截器
 api.interceptors.request.use(
@@ -31,7 +32,7 @@ api.interceptors.request.use(
     const userinfo = LStorage.get('main') as User_State;
     if (userinfo) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      config.headers!.Authorization = `${userinfo.access_token}`;
+      config.headers!.Authorization = `Bearer ${userinfo.access_token}`;
     }
     return config;
   },
@@ -76,4 +77,4 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api };
+export { api, baseURL };

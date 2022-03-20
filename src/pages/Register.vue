@@ -1,11 +1,3 @@
-<!--
- * @Author: your name
- * @Date: 2022-02-19 23:26:58
- * @LastEditTime: 2022-03-20 14:43:11
- * @LastEditors: Please set LastEditors
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: \Quasar-IM-frontend\src\pages\Login.vue
--->
 <template>
   <q-layout>
     <q-page-container>
@@ -13,9 +5,6 @@
         <q-card
           v-bind:style="$q.screen.lt.sm ? { width: '80%' } : { width: '30%' }"
         >
-          <q-text class="regist q-pr-md q-pt-md" @click="gotoRegister"
-            >点此注册</q-text
-          >
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
               <img src="profile.svg" />
@@ -23,7 +12,7 @@
           </q-card-section>
           <q-card-section>
             <div class="text-center q-pt-lg">
-              <div class="col text-h6 ellipsis">Sign in</div>
+              <div class="col text-h6 ellipsis">Register</div>
             </div>
           </q-card-section>
           <q-card-section>
@@ -40,7 +29,7 @@
 
               <div>
                 <q-btn
-                  label="Login"
+                  label="Register"
                   type="button"
                   color="primary"
                   @click="onSubmit"
@@ -56,12 +45,10 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
-import { api_login } from '../api/login';
+import { api_register } from '../api/login';
 import { useRouter } from 'vue-router';
 import { Notify } from 'quasar';
-import { useMainStore } from '../store/index';
 import { AxiosResponse } from 'axios';
-import { baseURL } from 'src/boot/axios';
 
 export default defineComponent({
   name: 'Login',
@@ -72,40 +59,20 @@ export default defineComponent({
 
     //↓路径信息
     const router = useRouter();
-    //↓Pinia信息
-    const userState = useMainStore();
-    //↓ws-url
-    const url = `ws://${baseURL}/ws?uid=1&toUid=2`;
 
     async function onSubmit() {
-      await api_login(username.value, password.value)
+      await api_register(username.value, password.value)
         .then(async function (res) {
           if (res.status == 200) {
-            userState.initUserstate({
-              access_token: res.data.access_token,
-              user: {
-                username: res.data.user.username,
-              },
-            });
-            userState.storageUserinfo();
-            Notify.create('登录成功！');
-            // 开启Websocket
-            const ws = new WebSocket(url);
-            ws.onopen = function () {
-              console.log('WebSocket is open now.');
-            };
-
-            await router.push({
-              name: 'index',
+            Notify.create('注册成功！');
+            await router.replace({
+              name: 'login',
             });
           }
         })
         .catch(function (err: AxiosResponse) {
-          if (err.status == 400) {
-            Notify.create('密码错误！');
-          } else if (err.status == 404) {
-            Notify.create('用户不存在！');
-          }
+          //TODO: 捕获错误
+          console.log(err);
         });
     }
 
@@ -140,6 +107,5 @@ export default defineComponent({
   z-index: 100;
   position: absolute;
   right: 0;
-  cursor: pointer;
 }
 </style>

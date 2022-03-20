@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2022-02-19 23:26:58
+ * @LastEditTime: 2022-03-20 14:01:44
+ * @LastEditors: your name
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \Quasar-IM-frontend\src\store\index.ts
+ */
 import { defineStore } from 'pinia';
 import { User_State } from 'src/components/models';
 import { store } from 'quasar/wrappers';
@@ -45,9 +53,11 @@ export const useMainStore = defineStore({
     },
     storageUserinfo() {
       LStorage.set('main', {
-        username: this.user.username,
         access_token: this.access_token,
-      });
+        user: {
+          username: this.user.username,
+        },
+      } as User_State);
     },
   },
 });
