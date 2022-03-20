@@ -1,7 +1,7 @@
 <!--
  * @Author: Awadabang
  * @Date: 2022-03-20 20:54:55
- * @LastEditTime: 2022-03-21 01:16:12
+ * @LastEditTime: 2022-03-21 01:37:31
  * @LastEditors: Awadabang
  * @Description: Description
  * @FilePath: \Quasar-IM-frontend\src\layouts\FriendLayout.vue
@@ -62,7 +62,7 @@ export default {
       if (currentFriendsIndex.value.value == -1) {
         return {} as Friends;
       } else {
-        return friend.friends[currentFriendsIndex.value.value];
+        return friend.friends[0];
       }
     }).value;
 

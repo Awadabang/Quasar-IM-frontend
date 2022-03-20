@@ -162,7 +162,7 @@ export default {
     const search = ref('');
     const message = ref('');
     const search_indrawer = ref('');
-    const Drawer_icon = ref('message');
+    const Drawer_icon = ref('group');
     const friend = friendsStore();
 
     onMounted(async () => {
@@ -207,9 +207,7 @@ export default {
     async function changeDrawer() {
       if (Drawer_icon.value == 'message') {
         Drawer_icon.value = 'group';
-        await api_getFriends(router).then(async () => {
-          await api_getFriends(router);
-        });
+        await api_getFriends(router);
       } else {
         Drawer_icon.value = 'message';
         await api_getConv(router);
